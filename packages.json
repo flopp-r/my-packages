@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Cipherfloppr_",
+    "version": "v2.0",
+    "desc": "A layered polycipher terminal encoder/decoder.",
+    "category": "Tools",
+    "tags": ["encryption", "terminal", "html"],
+    "user": "your-username",
+    "repo": "my-packages",
+    "branch": "main",
+    "path": "files/cipherfloppr.html",
+    "filename": "cipherfloppr.html"
+  }
+]
