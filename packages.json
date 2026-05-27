@@ -28,6 +28,21 @@
   "branch": "main",
   "path": "files/fxy2.vbs",
   "filename": "fxy2.vbs"
+},
+  {
+  "name": "MoveToStartup",
+  "version": "v1",
+  "desc": "Moves all .vbs and .bat files from the location of this file to the WINDOWS STARTUP FOLDER",
+  "category": "Tool",
+  "tags": [
+    "vbs",
+    "bat"
+  ],
+  "user": "flopp-r",
+  "repo": "my-packages",
+  "branch": "main",
+  "path": "files/Startup.vbs",
+  "filename": "Startup.vbs"
 }
 
 ]
