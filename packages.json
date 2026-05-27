@@ -22,7 +22,7 @@
   "tags": [
     "vbs",
     "foxy",
-    "windows"
+    "windows-only"
   ],
   "user": "flopp-r",
   "repo": "my-packages",
@@ -38,7 +38,7 @@
   "tags": [
     "vbs",
     "bat",
-    "windows"
+    "windows-only"
   ],
   "user": "flopp-r",
   "repo": "my-packages",
