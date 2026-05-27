@@ -1,6 +1,6 @@
 [
   {
-    "name": "Ciperfloppr",
+    "name": "Cipherfloppr",
     "version": "v26",
     "desc": "PolyCipher",
     "category": "Tool",
@@ -8,7 +8,7 @@
     "user": "flopp-r",
     "repo": "my-packages",
     "branch": "main",
-    "path": "files/ciperfloppr.html",
-    "filename": "ciperfloppr.html"
+    "path": "files/cipherfloppr.html",
+    "filename": "cipherfloppr.html"
   }
 ]
