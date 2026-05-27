@@ -43,6 +43,21 @@
   "branch": "main",
   "path": "files/Startup.vbs",
   "filename": "Startup.vbs"
+},
+  {
+  "name": "Package Entry Generator",
+  "version": "v2",
+  "desc": "Input the RAW of the file you want to add, and it will write the JSON script, for the pkmg.",
+  "category": "Tool",
+  "tags": [
+    "html",
+    "package-manager"
+  ],
+  "user": "flopp-r",
+  "repo": "my-packages",
+  "branch": "main",
+  "path": "files/pkg-entry-generatorV2.html",
+  "filename": "pkg-entry-generatorV2.html"
 }
 
 ]
