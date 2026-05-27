@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Package Entry Generator</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f; --bg2: #1a1a1a; --bg3: #222;
+    --border: #2e2e2e; --accent: #4f9eff; --green: #38d9a9;
+    --text: #e0e0e0; --dim: #666; --err: #ff5555;
+    --radius: 6px;
+  }
+  body { background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px; min-height: 100vh; padding: 32px 24px; }
+
+  h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .subtitle { color: var(--dim); font-size: 13px; margin-bottom: 28px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; max-width: 620px; margin: 0 auto; }
+
+  .section-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 14px; margin-top: 22px; }
+  .section-label:first-child { margin-top: 0; }
+
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 5px; }
+  input[type=text], textarea {
+    width: 100%; padding: 9px 12px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    color: var(--text); font-family: inherit; font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--accent); }
+  input[type=text]::placeholder, textarea::placeholder { color: var(--dim); }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .hint { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .hint span { color: var(--accent); }
+
+  .parsed-preview { background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 10px 12px; font-size: 12px;
+    color: var(--green); margin-top: 8px; min-height: 28px; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag-pill { display: flex; align-items: center; gap: 5px; padding: 3px 10px;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 20px;
+    font-size: 12px; color: var(--text); }
+  .tag-pill button { background: none; border: none; color: var(--dim);
+    cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+  .tag-pill button:hover { color: var(--err); }
+
+  .tag-input-row { display: flex; gap: 8px; }
+  .tag-input-row input { flex: 1; }
+  .btn-add { padding: 9px 14px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--accent); font-size: 13px;
+    cursor: pointer; transition: border-color 0.15s; white-space: nowrap; }
+  .btn-add:hover { border-color: var(--accent); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  .btn-gen { width: 100%; padding: 11px; background: var(--accent);
+    border: none; border-radius: var(--radius); color: #fff;
+    font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px;
+    transition: background 0.15s; }
+  .btn-gen:hover { background: #3a8aee; }
+
+  /* Output */
+  #output-section { max-width: 620px; margin: 20px auto 0; display: none; }
+  #output-section h2 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+  .output-box { position: relative; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  #output-code { font-family: 'Courier New', monospace; font-size: 12px;
+    color: var(--green); white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .btn-copy { position: absolute; top: 10px; right: 10px; padding: 5px 12px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--dim); font-size: 11px;
+    cursor: pointer; transition: all 0.15s; }
+  .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-copy.done { border-color: var(--green); color: var(--green); }
+
+  .instructions { margin-top: 14px; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .instructions p { font-size: 12px; color: var(--dim); line-height: 1.8; }
+  .instructions b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div style="max-width:620px;margin:0 auto 24px;">
+  <h1>📦 Package Entry Generator</h1>
+  <p class="subtitle">Fill in the details and get the JSON snippet to paste into packages.json</p>
+</div>
+
+<div class="card">
+
+  <!-- RAW URL -->
+  <div class="section-label">GitHub Raw URL</div>
+  <div class="field">
+    <label>Paste the raw file URL from GitHub</label>
+    <input type="text" id="raw-url" placeholder="https://raw.githubusercontent.com/username/repo/main/files/tool.html" oninput="parseUrl()">
+    <div class="hint" id="url-hint">Fields below will fill automatically once a valid URL is pasted.</div>
+  </div>
+
+  <div class="parsed-preview" id="parsed-preview" style="display:none"></div>
+
+  <hr class="divider">
+
+  <!-- AUTO-FILLED -->
+  <div class="section-label">Auto-filled from URL</div>
+  <div class="row">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="f-user" placeholder="your-username">
+    </div>
+    <div class="field">
+      <label>Repository</label>
+      <input type="text" id="f-repo" placeholder="my-packages">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Branch</label>
+      <input type="text" id="f-branch" placeholder="main">
+    </div>
+    <div class="field">
+      <label>File path in repo</label>
+      <input type="text" id="f-path" placeholder="files/tool.html">
+    </div>
+  </div>
+  <div class="field">
+    <label>Download filename <span style="color:var(--dim)">(what it saves as on your computer)</span></label>
+    <input type="text" id="f-filename" placeholder="tool.html">
+  </div>
+
+  <hr class="divider">
+
+  <!-- COSMETIC -->
+  <div class="section-label">Package Details</div>
+  <div class="row">
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="f-name" placeholder="My Cool Tool">
+    </div>
+    <div class="field">
+      <label>Version</label>
+      <input type="text" id="f-version" placeholder="v1.0">
+    </div>
+  </div>
+  <div class="field">
+    <label>Description</label>
+    <textarea id="f-desc" placeholder="A short description of what this tool does."></textarea>
+  </div>
+  <div class="field">
+    <label>Category <span style="color:var(--dim)">(creates a tab in the package manager)</span></label>
+    <input type="text" id="f-category" placeholder="Tools">
+  </div>
+  <div class="field">
+    <label>Tags</label>
+    <div class="tag-input-row">
+      <input type="text" id="tag-input" placeholder="e.g. html" onkeydown="if(event.key==='Enter'){addTag();event.preventDefault();}">
+      <button class="btn-add" onclick="addTag()">+ Add</button>
+    </div>
+    <div class="tags-wrap" id="tags-wrap"></div>
+  </div>
+
+  <button class="btn-gen" onclick="generate()">Generate Entry</button>
+</div>
+
+<div id="output-section">
+  <h2>Your JSON entry</h2>
+  <div class="output-box">
+    <button class="btn-copy" id="copy-btn" onclick="copyOutput()">Copy</button>
+    <pre id="output-code"></pre>
+  </div>
+  <div class="instructions">
+    <p>
+      <b>1.</b> Open <b>packages.json</b> in your GitHub repo and click the pencil icon.<br>
+      <b>2.</b> Find the last <b>}</b> before the closing <b>]</b> and add a <b>,</b> after it.<br>
+      <b>3.</b> Paste this snippet after that comma, before the <b>]</b>.<br>
+      <b>4.</b> Click <b>Commit changes</b>. Done.
+    </p>
+  </div>
+</div>
+
+<script>
+var tags = [];
+
+function parseUrl() {
+  var url = document.getElementById('raw-url').value.trim();
+  var hint = document.getElementById('url-hint');
+  var preview = document.getElementById('parsed-preview');
+
+  // Expected: https://raw.githubusercontent.com/USER/REPO/BRANCH/PATH
+  // Strip refs/heads/ or refs/tags/ if present
+  url = url.replace(/\/refs\/heads\//, '/').replace(/\/refs\/tags\//, '/');
+  var match = url.match(/^https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)$/);
+  if (!match) {
+    hint.innerHTML = 'Waiting for a valid raw.githubusercontent.com URL…';
+    preview.style.display = 'none';
+    return;
+  }
+
+  var user   = match[1];
+  var repo   = match[2];
+  var branch = match[3];
+  var path   = match[4];
+  var fname  = path.split('/').pop();
+
+  document.getElementById('f-user').value     = user;
+  document.getElementById('f-repo').value     = repo;
+  document.getElementById('f-branch').value   = branch;
+  document.getElementById('f-path').value     = path;
+  document.getElementById('f-filename').value = fname;
+
+  // pre-fill name from filename if empty
+  if (!document.getElementById('f-name').value) {
+    var n = fname.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+    n = n.charAt(0).toUpperCase() + n.slice(1);
+    document.getElementById('f-name').value = n;
+  }
+
+  preview.style.display = 'block';
+  preview.textContent = '✓  ' + user + ' / ' + repo + ' / ' + branch + ' / ' + path;
+  hint.innerHTML = 'Looks good! Fill in the details below.';
+}
+
+function addTag() {
+  var inp = document.getElementById('tag-input');
+  var val = inp.value.trim().toLowerCase().replace(/[^a-z0-9_\-]/g, '');
+  if (!val || tags.indexOf(val) !== -1) { inp.value = ''; return; }
+  tags.push(val);
+  inp.value = '';
+  renderTags();
+}
+
+function removeTag(t) {
+  tags = tags.filter(function(x) { return x !== t; });
+  renderTags();
+}
+
+function renderTags() {
+  var wrap = document.getElementById('tags-wrap');
+  wrap.innerHTML = '';
+  tags.forEach(function(t) {
+    var pill = document.createElement('div');
+    pill.className = 'tag-pill';
+    pill.innerHTML = t + '<button onclick="removeTag(\'' + t + '\')">×</button>';
+    wrap.appendChild(pill);
+  });
+}
+
+function val(id) { return document.getElementById(id).value.trim(); }
+
+function generate() {
+  var user     = val('f-user');
+  var repo     = val('f-repo');
+  var branch   = val('f-branch');
+  var path     = val('f-path');
+  var filename = val('f-filename');
+  var name     = val('f-name');
+  var version  = val('f-version');
+  var desc     = val('f-desc');
+  var category = val('f-category');
+
+  if (!user || !repo || !path) {
+    alert('Please paste a valid GitHub raw URL first so the repo details are filled in.');
+    return;
+  }
+  if (!name) { alert('Please enter a package name.'); return; }
+
+  var entry = {
+    name:     name     || 'Unnamed',
+    version:  version  || 'v1.0',
+    desc:     desc     || '',
+    category: category || 'General',
+    tags:     tags.slice(),
+    user:     user,
+    repo:     repo,
+    branch:   branch,
+    path:     path,
+    filename: filename || path.split('/').pop()
+  };
+
+  var json = JSON.stringify(entry, null, 2);
+  document.getElementById('output-code').textContent = json;
+  var sec = document.getElementById('output-section');
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyOutput() {
+  var text = document.getElementById('output-code').textContent;
+  var btn  = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('done');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
