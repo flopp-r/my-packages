@@ -1,20 +1,14 @@
 [
   {
-  "name": "Ciperfloppr",
-  "version": "v26",
-  "desc": "PolyCipher",
-  "category": "Tool",
-  "tags": [
-    "html",
-    "cipher"
-  ],
-  "user": "flopp-r",
-  "repo": "my-packages",
-  "branch": "main",
-  "path": "files/ciperfloppr.html",
-  "filename": "ciperfloppr.html"
-}
-
-
-
+    "name": "Ciperfloppr",
+    "version": "v26",
+    "desc": "PolyCipher",
+    "category": "Tool",
+    "tags": ["html", "cipher"],
+    "user": "flopp-r",
+    "repo": "my-packages",
+    "branch": "main",
+    "path": "files/ciperfloppr.html",
+    "filename": "ciperfloppr.html"
+  }
 ]
