@@ -21,7 +21,8 @@
   "category": "Prank",
   "tags": [
     "vbs",
-    "foxy"
+    "foxy",
+    "windows"
   ],
   "user": "flopp-r",
   "repo": "my-packages",
@@ -36,7 +37,8 @@
   "category": "Tool",
   "tags": [
     "vbs",
-    "bat"
+    "bat",
+    "windows"
   ],
   "user": "flopp-r",
   "repo": "my-packages",
