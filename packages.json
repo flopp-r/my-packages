@@ -58,6 +58,18 @@
   "branch": "main",
   "path": "files/pkg-entry-generatorV2.html",
   "filename": "pkg-entry-generatorV2.html"
+},
+  {
+  "name": "Minesweeper",
+  "version": "v1",
+  "desc": "Simple Minesweeper game",
+  "category": "Game",
+  "tags": [],
+  "user": "flopp-r",
+  "repo": "my-packages",
+  "branch": "main",
+  "path": "files/minesweeper.html",
+  "filename": "minesweeper.html"
 }
 
 ]
