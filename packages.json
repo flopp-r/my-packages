@@ -13,5 +13,21 @@
   "branch": "main",
   "path": "files/Cipherfloppr",
   "filename": "Cipherfloppr"
+},
+  {
+  "name": "FoxyJumpy2",
+  "version": "v2",
+  "desc": "Each second has 1/676 chance to spawn a fullscreen foxy jumpscare. FULL VOLUME",
+  "category": "Prank",
+  "tags": [
+    "vbs",
+    "foxy"
+  ],
+  "user": "flopp-r",
+  "repo": "my-packages",
+  "branch": "main",
+  "path": "files/Incomplice.II.vbs",
+  "filename": "fxy2.vbs"
 }
+
 ]
