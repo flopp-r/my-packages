@@ -1,18 +1,17 @@
 [
   {
   "name": "Cipherfloppr",
-  "version": "v26",
+  "version": "v1.0",
   "desc": "PolyCipher tool",
-  "category": "Tool",
+  "category": "Tools",
   "tags": [
-    "html",
-    "cipher"
+    "html"
   ],
   "user": "flopp-r",
   "repo": "my-packages",
   "branch": "main",
-  "path": "files/Cipherfloppr",
-  "filename": "Cipherfloppr"
+  "path": "files/Cipherfloppr.html",
+  "filename": "Cipherfloppr.html"
 },
   {
   "name": "Fxy2",
