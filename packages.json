@@ -71,6 +71,20 @@
   "branch": "main",
   "path": "files/minesweeper.html",
   "filename": "minesweeper.html"
+},
+  {
+  "name": "Linux cheatsheet",
+  "version": "v1.0",
+  "desc": "A list of useful terminal commands.",
+  "category": "Help",
+  "tags": [
+    "html"
+  ],
+  "user": "flopp-r",
+  "repo": "my-packages",
+  "branch": "main",
+  "path": "files/linux_cheatsheet.html",
+  "filename": "linux_cheatsheet.html"
 }
 
 ]
