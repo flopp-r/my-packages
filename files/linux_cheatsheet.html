@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Terminal Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --bg2: #161719;
+    --bg3: #1e1f23;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e4e9;
+    --muted: #6b6f7a;
+    --accent: #7ee8a2;
+    --accent2: #5bc0eb;
+    --accent3: #f4a261;
+    --accent4: #e07a5f;
+    --accent5: #c77dff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 48px 32px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .header-left p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .header-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: rgba(255,255,255,0.14); }
+
+  .card-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .card-body { padding: 12px 0; }
+
+  .cmd-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 12px;
+    align-items: baseline;
+    padding: 5px 16px;
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  .cmd-row:hover { background: var(--bg3); }
+
+  .cmd {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #fff;
+  }
+
+  .cmd-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .cmd.green  { color: var(--accent); }
+  .cmd.blue   { color: var(--accent2); }
+  .cmd.orange { color: var(--accent3); }
+  .cmd.red    { color: var(--accent4); }
+  .cmd.purple { color: var(--accent5); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 16px;
+  }
+
+  .warn-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(224, 122, 95, 0.08);
+    border-top: 1px solid rgba(224, 122, 95, 0.15);
+    margin-top: 4px;
+  }
+
+  .warn-icon {
+    color: var(--accent4);
+    font-size: 12px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .warn-text {
+    font-size: 11.5px;
+    color: rgba(224, 122, 95, 0.85);
+    line-height: 1.5;
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-tip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .footer-tip span { color: var(--accent); }
+
+  @media print {
+    body { background: #fff; color: #111; padding: 24px; }
+    :root {
+      --bg: #fff; --bg2: #f5f5f5; --bg3: #ebebeb;
+      --border: #ddd; --text: #111; --muted: #666;
+      --accent: #1a7a3f; --accent2: #1a5f8a;
+      --accent3: #8a5200; --accent4: #8a2000; --accent5: #5a00aa;
+    }
+    .card:hover { border-color: var(--border); }
+    .cmd-row:hover { background: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>$ terminal cheatsheet</h1>
+    <p>Arch Linux · Hyprland · Bash · bat · eza · zoxide</p>
+  </div>
+  <div class="header-badge">ml4w setup</div>
+</header>
+
+<div class="grid">
+
+  <!-- Navigation -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent)"></div>
+      <span class="card-title" style="color:var(--accent)">Navigation</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd green">pwd</span><span class="cmd-desc">show current folder location</span></div>
+      <div class="cmd-row"><span class="cmd green">cd foldername</span><span class="cmd-desc">go into a folder</span></div>
+      <div class="cmd-row"><span class="cmd green">cd ..</span><span class="cmd-desc">go up one level</span></div>
+      <div class="cmd-row"><span class="cmd green">cd ../..</span><span class="cmd-desc">go up two levels</span></div>
+      <div class="cmd-row"><span class="cmd green">cd ~</span><span class="cmd-desc">jump to home folder from anywhere</span></div>
+      <div class="cmd-row"><span class="cmd green">cd -</span><span class="cmd-desc">go back to last folder (undo)</span></div>
+    </div>
+  </div>
+
+  <!-- Zoxide -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent5)"></div>
+      <span class="card-title" style="color:var(--accent5)">Zoxide — smart jumping</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd purple">z name</span><span class="cmd-desc">jump to a folder you've visited before</span></div>
+      <div class="cmd-row"><span class="cmd purple">zi</span><span class="cmd-desc">interactive fuzzy search of history</span></div>
+      <div class="cmd-row"><span class="cmd purple">z ..</span><span class="cmd-desc">go up a level (same as cd ..)</span></div>
+      <div class="cmd-row"><span class="cmd purple">z ~</span><span class="cmd-desc">go home</span></div>
+      <div class="divider"></div>
+      <div class="cmd-row"><span class="cmd-desc" style="padding:0;color:var(--muted);font-size:11.5px;line-height:1.5">Gets smarter over time — the more you navigate, the better it knows where you mean</span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Listing files -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent2)"></div>
+      <span class="card-title" style="color:var(--accent2)">Listing files — eza</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd blue">ls</span><span class="cmd-desc">simple list with icons + colors</span></div>
+      <div class="cmd-row"><span class="cmd blue">ll</span><span class="cmd-desc">detailed list with sizes, dates, git status</span></div>
+      <div class="cmd-row"><span class="cmd blue">lt</span><span class="cmd-desc">tree view, 2 levels deep</span></div>
+      <div class="cmd-row"><span class="cmd blue">lt --level=1</span><span class="cmd-desc">tree view, 1 level only</span></div>
+      <div class="cmd-row"><span class="cmd blue">lt --level=3</span><span class="cmd-desc">tree view, 3 levels deep</span></div>
+      <div class="cmd-row"><span class="cmd blue">la</span><span class="cmd-desc">show hidden files too (dotfiles)</span></div>
+    </div>
+  </div>
+
+  <!-- Reading files -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent3)"></div>
+      <span class="card-title" style="color:var(--accent3)">Reading files — bat</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd orange">cat file.txt</span><span class="cmd-desc">view file with syntax highlighting</span></div>
+      <div class="cmd-row"><span class="cmd orange">catp file.txt</span><span class="cmd-desc">plain output, no decorations</span></div>
+      <div class="cmd-row"><span class="cmd orange">cat -n file.txt</span><span class="cmd-desc">show with line numbers</span></div>
+      <div class="divider"></div>
+      <div class="cmd-row"><span class="cmd-desc" style="padding:0;color:var(--muted);font-size:11.5px">Press <span style="font-family:monospace;color:var(--text)">q</span> to quit if file is long. <span style="font-family:monospace;color:var(--text)">Space</span> to scroll down.</span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Editing files -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent2)"></div>
+      <span class="card-title" style="color:var(--accent2)">Editing — micro</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd blue">micro file.txt</span><span class="cmd-desc">open a file for editing</span></div>
+      <div class="cmd-row"><span class="cmd blue">micro ~/.bashrc</span><span class="cmd-desc">edit your shell config</span></div>
+      <div class="divider"></div>
+      <div class="cmd-row"><span class="cmd blue">Ctrl + S</span><span class="cmd-desc">save</span></div>
+      <div class="cmd-row"><span class="cmd blue">Ctrl + Q</span><span class="cmd-desc">quit</span></div>
+      <div class="cmd-row"><span class="cmd blue">Ctrl + Z</span><span class="cmd-desc">undo</span></div>
+      <div class="cmd-row"><span class="cmd blue">Ctrl + F</span><span class="cmd-desc">find / search in file</span></div>
+    </div>
+  </div>
+
+  <!-- Creating & managing -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent)"></div>
+      <span class="card-title" style="color:var(--accent)">Creating & managing</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd green">mkdir foldername</span><span class="cmd-desc">create a new folder</span></div>
+      <div class="cmd-row"><span class="cmd green">touch file.txt</span><span class="cmd-desc">create a new empty file</span></div>
+      <div class="cmd-row"><span class="cmd green">cp file.txt copy.txt</span><span class="cmd-desc">copy a file</span></div>
+      <div class="cmd-row"><span class="cmd green">cp -r folder/ new/</span><span class="cmd-desc">copy a whole folder</span></div>
+      <div class="cmd-row"><span class="cmd green">mv file.txt ~/Docs/</span><span class="cmd-desc">move a file to another folder</span></div>
+      <div class="cmd-row"><span class="cmd green">mv old.txt new.txt</span><span class="cmd-desc">rename a file</span></div>
+    </div>
+  </div>
+
+  <!-- Deleting -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent4)"></div>
+      <span class="card-title" style="color:var(--accent4)">Deleting</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd red">rm file.txt</span><span class="cmd-desc">delete a file</span></div>
+      <div class="cmd-row"><span class="cmd red">rm -r foldername/</span><span class="cmd-desc">delete a whole folder</span></div>
+      <div class="warn-row">
+        <span class="warn-icon">⚠</span>
+        <span class="warn-text">No recycle bin on Linux. Deleted files are gone instantly and permanently. Double-check before running rm.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Searching -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent5)"></div>
+      <span class="card-title" style="color:var(--accent5)">Searching — ripgrep</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd purple">rg "word" .</span><span class="cmd-desc">search for text in current folder</span></div>
+      <div class="cmd-row"><span class="cmd purple">rg "word" ~/path/</span><span class="cmd-desc">search in a specific folder</span></div>
+      <div class="cmd-row"><span class="cmd purple">rg -i "word" .</span><span class="cmd-desc">case-insensitive search</span></div>
+      <div class="cmd-row"><span class="cmd purple">ll | grep name</span><span class="cmd-desc">filter file list by name</span></div>
+      <div class="divider"></div>
+      <div class="cmd-row"><span class="cmd-desc" style="padding:0;color:var(--muted);font-size:11.5px">Great for finding config settings — tells you exactly which file and line number</span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Packages -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent3)"></div>
+      <span class="card-title" style="color:var(--accent3)">Packages — pacman</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd orange">sudo pacman -S name</span><span class="cmd-desc">install a package</span></div>
+      <div class="cmd-row"><span class="cmd orange">sudo pacman -R name</span><span class="cmd-desc">remove a package</span></div>
+      <div class="cmd-row"><span class="cmd orange">sudo pacman -Syu</span><span class="cmd-desc">update everything on your system</span></div>
+      <div class="cmd-row"><span class="cmd orange">pacman -Ss name</span><span class="cmd-desc">search for a package</span></div>
+      <div class="cmd-row"><span class="cmd orange">yay -S name</span><span class="cmd-desc">install an AUR package</span></div>
+    </div>
+  </div>
+
+  <!-- Power combos -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot" style="background:var(--accent)"></div>
+      <span class="card-title" style="color:var(--accent)">Power combos</span>
+    </div>
+    <div class="card-body">
+      <div class="cmd-row"><span class="cmd green">z hypr && micro hyprland.conf</span><span class="cmd-desc">jump to folder and open file</span></div>
+      <div class="cmd-row"><span class="cmd green">cat file && micro file</span><span class="cmd-desc">preview then edit</span></div>
+      <div class="cmd-row"><span class="cmd green">source ~/.bashrc</span><span class="cmd-desc">reload config after editing</span></div>
+      <div class="cmd-row"><span class="cmd green">Ctrl + C</span><span class="cmd-desc">cancel / stop whatever is running</span></div>
+      <div class="cmd-row"><span class="cmd green">Ctrl + L</span><span class="cmd-desc">clear the terminal screen</span></div>
+      <div class="cmd-row"><span class="cmd green">↑ arrow key</span><span class="cmd-desc">cycle through previous commands</span></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-tip">tip: press <span>↑</span> in terminal to recall last command</span>
+  <span class="footer-tip" style="color:var(--muted);font-size:11px">ctrl+c cancels anything · q quits bat pager · tab autocompletes</span>
+</footer>
+
+</body>
+</html>
