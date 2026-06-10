@@ -54,17 +54,7 @@
   .btn-dl.loading { opacity: 0.6; pointer-events: none; }
   .btn-dl.done { background: var(--accent2); }
   .btn-dl.error { background: var(--err); }
-  .section-title { font-size: 13px; font-weight: 600; color: var(--dim);
-    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; margin-top: 32px; }
-  #tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 32px; }
-  .tool-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 14px; display: flex; flex-direction: column; gap: 6px;
-    text-decoration: none; transition: border-color 0.2s, transform 0.15s; }
-  .tool-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .tool-name { font-weight: 600; font-size: 14px; color: #fff; }
-  .tool-desc { font-size: 12px; color: var(--dim); line-height: 1.5; flex: 1; }
-  .tool-url { font-size: 11px; color: var(--accent); font-family: monospace;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 4px; }
+  .empty { grid-column: 1/-1; text-align: center; color: var(--dim); padding: 48px 0; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -77,12 +67,6 @@
   <input id="search" type="text" placeholder="Search packages…" oninput="render()">
 </div>
 
-<div id="tools-section" style="display:none">
-  <div class="section-title">// Web Tools</div>
-  <div id="tools-grid"></div>
-</div>
-
-<div class="section-title">// Packages</div>
 <div id="tabs"></div>
 <div id="grid"></div>
 
@@ -90,7 +74,6 @@
 var REGISTRY_URL = './packages.json';
 
 var PACKAGES = [];
-var WEBTOOLS = [];
 var activeTab = 'All';
 
 function getCategories() {
@@ -136,35 +119,7 @@ function downloadPkg(pkg, btn) {
     });
 }
 
-function renderTools() {
-  var grid = document.getElementById('tools-grid');
-  var section = document.getElementById('tools-section');
-  if (!WEBTOOLS.length) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  grid.innerHTML = '';
-  WEBTOOLS.forEach(function(t) {
-    var a = document.createElement('a');
-    a.className = 'tool-card';
-    a.href = t.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    var name = document.createElement('div');
-    name.className = 'tool-name';
-    name.textContent = t.name;
-    var desc = document.createElement('div');
-    desc.className = 'tool-desc';
-    desc.textContent = t.desc || '';
-    var url = document.createElement('div');
-    url.className = 'tool-url';
-    url.textContent = t.url;
-    a.appendChild(name);
-    if (t.desc) a.appendChild(desc);
-    a.appendChild(url);
-    grid.appendChild(a);
-  });
-}
-
-
+function render() {
   var query = document.getElementById('search').value.toLowerCase();
   var tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
@@ -251,15 +206,7 @@ function init() {
       raw = raw.replace(/^\uFEFF/, '');
       raw = raw.replace(/^[^[{]*/, '');
       raw = raw.replace(/[^}\]]*$/, '');
-      var data = JSON.parse(raw);
-      if (Array.isArray(data)) {
-        PACKAGES = data;
-        WEBTOOLS = [];
-      } else {
-        PACKAGES = data.packages || [];
-        WEBTOOLS = data.webtools || [];
-      }
-      renderTools();
+      PACKAGES = JSON.parse(raw);
       render();
     } catch(e) {
       grid.innerHTML = '<div class="empty" style="color:var(--err)">✗ Could not parse registry.<br><small>' + e.message + '</small></div>';
