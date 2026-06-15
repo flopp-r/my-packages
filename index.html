@@ -16,6 +16,8 @@
     font-size: 14px; min-height: 100vh; padding: 32px 24px; }
   h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; color: #fff; }
   .subtitle { color: var(--dim); font-size: 13px; margin-bottom: 28px; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
   #search-wrap { position: relative; margin-bottom: 20px; }
   #search { width: 100%; padding: 10px 14px 10px 38px; background: var(--bg2);
     border: 1px solid var(--border); border-radius: var(--radius);
@@ -24,7 +26,21 @@
   #search::placeholder { color: var(--dim); }
   .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
     color: var(--dim); font-size: 15px; pointer-events: none; }
-  #tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+
+  /* ── Web tools ── */
+  #tools-section { margin-bottom: 36px; }
+  #tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .tool-card { display: flex; flex-direction: column; gap: 5px;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px; text-decoration: none; transition: border-color 0.2s, transform 0.15s; }
+  .tool-card:hover { border-color: var(--accent2); transform: translateY(-1px); }
+  .tool-name { font-weight: 600; font-size: 14px; color: #fff; }
+  .tool-desc { font-size: 12px; color: var(--dim); line-height: 1.5; }
+  .tool-url { font-size: 11px; color: var(--accent2); font-family: monospace;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 4px; }
+
+  /* ── Packages ── */
+  #tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .tab { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
     background: none; color: var(--dim); font-size: 12px; cursor: pointer;
     transition: all 0.15s; letter-spacing: 0.3px; }
@@ -64,16 +80,24 @@
 
 <div id="search-wrap">
   <span class="search-icon">🔍</span>
-  <input id="search" type="text" placeholder="Search packages…" oninput="render()">
+  <input id="search" type="text" placeholder="Search packages…" oninput="renderPackages()">
 </div>
 
-<div id="tabs"></div>
-<div id="grid"></div>
+<div id="tools-section" style="display:none">
+  <div class="section-label">// Web Tools</div>
+  <div id="tools-grid"></div>
+</div>
+
+<div style="margin-top:28px">
+  <div class="section-label">// Packages</div>
+  <div id="tabs"></div>
+  <div id="grid"></div>
+</div>
 
 <script>
 var REGISTRY_URL = './packages.json';
-
 var PACKAGES = [];
+var WEBTOOLS = [];
 var activeTab = 'All';
 
 function getCategories() {
@@ -115,11 +139,40 @@ function downloadPkg(pkg, btn) {
       btn.classList.remove('loading');
       btn.classList.add('error');
       setTimeout(function() { btn.textContent = '⬇ Download'; btn.classList.remove('error'); }, 2500);
-      console.error('Download failed:', err);
     });
 }
 
-function render() {
+function renderTools() {
+  var section = document.getElementById('tools-section');
+  var grid = document.getElementById('tools-grid');
+  if (!WEBTOOLS || !WEBTOOLS.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  grid.innerHTML = '';
+  WEBTOOLS.forEach(function(t) {
+    var a = document.createElement('a');
+    a.className = 'tool-card';
+    a.href = t.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    var name = document.createElement('div');
+    name.className = 'tool-name';
+    name.textContent = t.name;
+    var url = document.createElement('div');
+    url.className = 'tool-url';
+    url.textContent = t.url;
+    a.appendChild(name);
+    if (t.desc) {
+      var desc = document.createElement('div');
+      desc.className = 'tool-desc';
+      desc.textContent = t.desc;
+      a.appendChild(desc);
+    }
+    a.appendChild(url);
+    grid.appendChild(a);
+  });
+}
+
+function renderPackages() {
   var query = document.getElementById('search').value.toLowerCase();
   var tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
@@ -127,7 +180,7 @@ function render() {
     var btn = document.createElement('button');
     btn.className = 'tab' + (cat === activeTab ? ' active' : '');
     btn.textContent = cat;
-    btn.onclick = function() { activeTab = cat; render(); };
+    btn.onclick = function() { activeTab = cat; renderPackages(); };
     tabsEl.appendChild(btn);
   });
 
@@ -183,7 +236,7 @@ function render() {
     fileLabel.textContent = pkg.path;
     var btn = document.createElement('button');
     btn.className = 'btn-dl';
-    btn.innerHTML = '⬇ Download';
+    btn.textContent = '⬇ Download';
     btn.onclick = function() { downloadPkg(pkg, btn); };
     footer.appendChild(fileLabel);
     footer.appendChild(btn);
@@ -204,10 +257,16 @@ function init() {
     try {
       var raw = xhr.responseText;
       raw = raw.replace(/^\uFEFF/, '');
-      raw = raw.replace(/^[^[{]*/, '');
-      raw = raw.replace(/[^}\]]*$/, '');
-      PACKAGES = JSON.parse(raw);
-      render();
+      var data = JSON.parse(raw);
+      if (Array.isArray(data)) {
+        PACKAGES = data;
+        WEBTOOLS = [];
+      } else {
+        PACKAGES = data.packages || [];
+        WEBTOOLS = data.webtools || [];
+      }
+      renderTools();
+      renderPackages();
     } catch(e) {
       grid.innerHTML = '<div class="empty" style="color:var(--err)">✗ Could not parse registry.<br><small>' + e.message + '</small></div>';
     }
