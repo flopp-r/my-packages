@@ -256,7 +256,15 @@ function init() {
   xhr.onload = function() {
     try {
       var raw = xhr.responseText;
-      raw = raw.replace(/^\uFEFF/, '');
+      raw = raw.replace(/^\uFEFF/, '').trim();
+      // Extract only the first complete JSON value to ignore any trailing garbage
+      var depth = 0, end = 0, open = raw[0];
+      var close = open === '{' ? '}' : ']';
+      for (var i = 0; i < raw.length; i++) {
+        if (raw[i] === open) depth++;
+        else if (raw[i] === close) { depth--; if (depth === 0) { end = i; break; } }
+      }
+      raw = raw.slice(0, end + 1);
       var data = JSON.parse(raw);
       if (Array.isArray(data)) {
         PACKAGES = data;
