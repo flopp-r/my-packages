@@ -17,7 +17,13 @@
     font-size: 14px; min-height: 100vh; padding: 32px 24px; }
 
   h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-  .subtitle { color: var(--dim); font-size: 13px; margin-bottom: 28px; }
+  .subtitle { color: var(--dim); font-size: 13px; margin-bottom: 24px; }
+
+  .mode-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; width: fit-content; margin-bottom: 24px; }
+  .mode-btn { padding: 9px 22px; background: none; border: none; color: var(--dim);
+    font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mode-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
 
   .card { background: var(--bg2); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 24px; max-width: 620px; margin: 0 auto; }
@@ -39,11 +45,9 @@
   textarea { resize: vertical; min-height: 60px; }
 
   .hint { font-size: 11px; color: var(--dim); margin-top: 4px; }
-  .hint span { color: var(--accent); }
-
   .parsed-preview { background: var(--bg3); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 10px 12px; font-size: 12px;
-    color: var(--green); margin-top: 8px; min-height: 28px; }
+    color: var(--green); margin-top: 8px; }
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -66,16 +70,12 @@
 
   .btn-gen { width: 100%; padding: 11px; background: var(--accent);
     border: none; border-radius: var(--radius); color: #fff;
-    font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px;
+    font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
     transition: background 0.15s; }
   .btn-gen:hover { background: #3a8aee; }
 
-  /* Output */
-  #output-section { max-width: 620px; margin: 20px auto 0; display: none; }
-  #mode-toggle { display: flex; gap: 0; margin-bottom: 28px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; width: fit-content; }
-  .mode-btn { padding: 8px 20px; background: none; border: none; color: var(--dim);
-    font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.15s; }
-  .mode-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+  #output-section { max-width: 620px; margin: 20px auto 0; }
+  #output-section h2 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; }
   .output-box { position: relative; background: var(--bg2);
     border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
   #output-code { font-family: 'Courier New', monospace; font-size: 12px;
@@ -95,75 +95,55 @@
 </head>
 <body>
 
-<div style="max-width:620px;margin:0 auto 24px;">
+<div style="max-width:620px;margin:0 auto 20px;">
   <h1>📦 Package Entry Generator</h1>
-  <p class="subtitle">Fill in the details and get the JSON snippet to paste into packages.json</p>
+  <p class="subtitle">Generate JSON snippets for packages.json</p>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-pkg" onclick="setMode('package')">📦 Package</button>
+    <button class="mode-btn"        id="btn-tool" onclick="setMode('webtool')">🔗 Web Tool</button>
+  </div>
 </div>
 
-<div id="mode-toggle">
-  <button class="mode-btn active" id="btn-pkg" onclick="setMode('package')">📦 Package</button>
-  <button class="mode-btn" id="btn-tool" onclick="setMode('webtool')">🔗 Web Tool</button>
-</div>
-
-
+<!-- PACKAGE FORM -->
+<div class="card" id="pkg-form">
   <div class="section-label">GitHub Raw URL</div>
   <div class="field">
     <label>Paste the raw file URL from GitHub</label>
-    <input type="text" id="raw-url" placeholder="https://raw.githubusercontent.com/username/repo/main/files/tool.html" oninput="parseUrl()">
+    <input type="text" id="raw-url" placeholder="https://raw.githubusercontent.com/flopp-r/my-packages/main/files/tool.html" oninput="parseUrl()">
     <div class="hint" id="url-hint">Fields below will fill automatically once a valid URL is pasted.</div>
   </div>
-
   <div class="parsed-preview" id="parsed-preview" style="display:none"></div>
 
   <hr class="divider">
 
-  <!-- AUTO-FILLED -->
   <div class="section-label">Auto-filled from URL</div>
   <div class="row">
-    <div class="field">
-      <label>Username</label>
-      <input type="text" id="f-user" placeholder="your-username">
-    </div>
-    <div class="field">
-      <label>Repository</label>
-      <input type="text" id="f-repo" placeholder="my-packages">
-    </div>
+    <div class="field"><label>Username</label><input type="text" id="f-user" placeholder="flopp-r"></div>
+    <div class="field"><label>Repository</label><input type="text" id="f-repo" placeholder="my-packages"></div>
   </div>
   <div class="row">
-    <div class="field">
-      <label>Branch</label>
-      <input type="text" id="f-branch" placeholder="main">
-    </div>
-    <div class="field">
-      <label>File path in repo</label>
-      <input type="text" id="f-path" placeholder="files/tool.html">
-    </div>
+    <div class="field"><label>Branch</label><input type="text" id="f-branch" placeholder="main"></div>
+    <div class="field"><label>File path in repo</label><input type="text" id="f-path" placeholder="files/tool.html"></div>
   </div>
   <div class="field">
-    <label>Download filename <span style="color:var(--dim)">(what it saves as on your computer)</span></label>
+    <label>Download filename</label>
     <input type="text" id="f-filename" placeholder="tool.html">
   </div>
 
   <hr class="divider">
 
-  <!-- COSMETIC -->
   <div class="section-label">Package Details</div>
   <div class="row">
-    <div class="field">
-      <label>Name</label>
-      <input type="text" id="f-name" placeholder="My Cool Tool">
-    </div>
-    <div class="field">
-      <label>Version</label>
-      <input type="text" id="f-version" placeholder="v1.0">
-    </div>
+    <div class="field"><label>Name</label><input type="text" id="f-name" placeholder="My Cool Tool"></div>
+    <div class="field"><label>Version</label><input type="text" id="f-version" placeholder="v1.0"></div>
   </div>
   <div class="field">
     <label>Description</label>
-    <textarea id="f-desc" placeholder="A short description of what this tool does."></textarea>
+    <textarea id="f-desc" placeholder="A short description."></textarea>
   </div>
   <div class="field">
-    <label>Category <span style="color:var(--dim)">(creates a tab in the package manager)</span></label>
+    <label>Category</label>
     <input type="text" id="f-category" placeholder="Tools">
   </div>
   <div class="field">
@@ -174,10 +154,10 @@
     </div>
     <div class="tags-wrap" id="tags-wrap"></div>
   </div>
-
-  <button class="btn-gen" onclick="generate()">Generate Entry</button>
+  <button class="btn-gen" onclick="generatePackage()">Generate Entry</button>
 </div>
 
+<!-- WEB TOOL FORM -->
 <div class="card" id="tool-form" style="display:none">
   <div class="section-label">Web Tool Details</div>
   <div class="field">
@@ -195,86 +175,55 @@
   <button class="btn-gen" onclick="generateTool()">Generate Entry</button>
 </div>
 
-<div id="output-section">
+<!-- OUTPUT -->
+<div id="output-section" style="display:none">
   <h2>Your JSON entry</h2>
   <div class="output-box">
     <button class="btn-copy" id="copy-btn" onclick="copyOutput()">Copy</button>
     <pre id="output-code"></pre>
   </div>
   <div class="instructions">
-    <p>
-      <b>1.</b> Open <b>packages.json</b> in your GitHub repo and click the pencil icon.<br>
-      <b>2.</b> Find the last <b>}</b> before the closing <b>]</b> and add a <b>,</b> after it.<br>
-      <b>3.</b> Paste this snippet after that comma, before the <b>]</b>.<br>
-      <b>4.</b> Click <b>Commit changes</b>. Done.
-    </p>
+    <p id="instructions-text"></p>
   </div>
 </div>
 
 <script>
+var tags = [];
 var currentMode = 'package';
 
 function setMode(mode) {
   currentMode = mode;
-  document.getElementById('pkg-form').style.display   = mode === 'package' ? 'block' : 'none';
-  document.getElementById('tool-form').style.display  = mode === 'webtool' ? 'block' : 'none';
+  document.getElementById('pkg-form').style.display  = mode === 'package' ? 'block' : 'none';
+  document.getElementById('tool-form').style.display = mode === 'webtool' ? 'block' : 'none';
   document.getElementById('btn-pkg').classList.toggle('active', mode === 'package');
   document.getElementById('btn-tool').classList.toggle('active', mode === 'webtool');
   document.getElementById('output-section').style.display = 'none';
 }
 
-function generateTool() {
-  var name = document.getElementById('t-name').value.trim();
-  var desc = document.getElementById('t-desc').value.trim();
-  var url  = document.getElementById('t-url').value.trim();
-  if (!name) { alert('Please enter a tool name.'); return; }
-  if (!url)  { alert('Please enter a URL.'); return; }
-  var entry = { name: name, desc: desc || '', url: url };
-  document.getElementById('output-code').textContent = JSON.stringify(entry, null, 2);
-  var sec = document.getElementById('output-section');
-  sec.style.display = 'block';
-  sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-
-
 function parseUrl() {
   var url = document.getElementById('raw-url').value.trim();
-  var hint = document.getElementById('url-hint');
-  var preview = document.getElementById('parsed-preview');
-
-  // Expected: https://raw.githubusercontent.com/USER/REPO/BRANCH/PATH
-  // Strip refs/heads/ or refs/tags/ if present
   url = url.replace(/\/refs\/heads\//, '/').replace(/\/refs\/tags\//, '/');
   var match = url.match(/^https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)$/);
   if (!match) {
-    hint.innerHTML = 'Waiting for a valid raw.githubusercontent.com URL…';
-    preview.style.display = 'none';
+    document.getElementById('url-hint').textContent = 'Waiting for a valid raw.githubusercontent.com URL…';
+    document.getElementById('parsed-preview').style.display = 'none';
     return;
   }
-
-  var user   = match[1];
-  var repo   = match[2];
-  var branch = match[3];
-  var path   = match[4];
-  var fname  = path.split('/').pop();
-
+  var user = match[1], repo = match[2], branch = match[3], path = match[4];
+  var fname = path.split('/').pop();
   document.getElementById('f-user').value     = user;
   document.getElementById('f-repo').value     = repo;
   document.getElementById('f-branch').value   = branch;
   document.getElementById('f-path').value     = path;
   document.getElementById('f-filename').value = fname;
-
-  // pre-fill name from filename if empty
   if (!document.getElementById('f-name').value) {
     var n = fname.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-    n = n.charAt(0).toUpperCase() + n.slice(1);
-    document.getElementById('f-name').value = n;
+    document.getElementById('f-name').value = n.charAt(0).toUpperCase() + n.slice(1);
   }
-
+  var preview = document.getElementById('parsed-preview');
   preview.style.display = 'block';
   preview.textContent = '✓  ' + user + ' / ' + repo + ' / ' + branch + ' / ' + path;
-  hint.innerHTML = 'Looks good! Fill in the details below.';
+  document.getElementById('url-hint').textContent = 'Looks good! Fill in the details below.';
 }
 
 function addTag() {
@@ -304,38 +253,43 @@ function renderTags() {
 
 function val(id) { return document.getElementById(id).value.trim(); }
 
-function generate() {
-  var user     = val('f-user');
-  var repo     = val('f-repo');
-  var branch   = val('f-branch');
-  var path     = val('f-path');
-  var filename = val('f-filename');
-  var name     = val('f-name');
-  var version  = val('f-version');
-  var desc     = val('f-desc');
-  var category = val('f-category');
-
-  if (!user || !repo || !path) {
-    alert('Please paste a valid GitHub raw URL first so the repo details are filled in.');
-    return;
-  }
+function generatePackage() {
+  var user = val('f-user'), repo = val('f-repo'), branch = val('f-branch');
+  var path = val('f-path'), filename = val('f-filename'), name = val('f-name');
+  if (!user || !repo || !path) { alert('Please paste a valid GitHub raw URL first.'); return; }
   if (!name) { alert('Please enter a package name.'); return; }
-
   var entry = {
-    name:     name     || 'Unnamed',
-    version:  version  || 'v1.0',
-    desc:     desc     || '',
-    category: category || 'General',
-    tags:     tags.slice(),
-    user:     user,
-    repo:     repo,
-    branch:   branch,
-    path:     path,
-    filename: filename || path.split('/').pop()
+    name: name, version: val('f-version') || 'v1.0',
+    desc: val('f-desc') || '', category: val('f-category') || 'General',
+    tags: tags.slice(), user: user, repo: repo, branch: branch,
+    path: path, filename: filename || path.split('/').pop()
   };
+  showOutput(JSON.stringify(entry, null, 2),
+    '<b>1.</b> Open <b>packages.json</b> → pencil icon.<br>' +
+    '<b>2.</b> Find the last <b>}</b> inside <b>"packages": [...]</b> and add a <b>,</b> after it.<br>' +
+    '<b>3.</b> Paste this snippet after that comma, before the closing <b>]</b>.<br>' +
+    '<b>4.</b> Click <b>Commit changes</b>.'
+  );
+}
 
-  var json = JSON.stringify(entry, null, 2);
+function generateTool() {
+  var name = document.getElementById('t-name').value.trim();
+  var desc = document.getElementById('t-desc').value.trim();
+  var url  = document.getElementById('t-url').value.trim();
+  if (!name) { alert('Please enter a tool name.'); return; }
+  if (!url)  { alert('Please enter a URL.'); return; }
+  var entry = { name: name, desc: desc, url: url };
+  showOutput(JSON.stringify(entry, null, 2),
+    '<b>1.</b> Open <b>packages.json</b> → pencil icon.<br>' +
+    '<b>2.</b> Find the last <b>}</b> inside <b>"webtools": [...]</b> and add a <b>,</b> after it.<br>' +
+    '<b>3.</b> Paste this snippet after that comma, before the closing <b>]</b>.<br>' +
+    '<b>4.</b> Click <b>Commit changes</b>.'
+  );
+}
+
+function showOutput(json, instructions) {
   document.getElementById('output-code').textContent = json;
+  document.getElementById('instructions-text').innerHTML = instructions;
   var sec = document.getElementById('output-section');
   sec.style.display = 'block';
   sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -343,7 +297,7 @@ function generate() {
 
 function copyOutput() {
   var text = document.getElementById('output-code').textContent;
-  var btn  = document.getElementById('copy-btn');
+  var btn = document.getElementById('copy-btn');
   navigator.clipboard.writeText(text).then(function() {
     btn.textContent = '✓ Copied';
     btn.classList.add('done');
