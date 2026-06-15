@@ -1,3 +1,86 @@
+{
+  "packages": [
+    {
+      "name": "Cipherfloppr",
+      "version": "v1.0",
+      "desc": "PolyCipher tool",
+      "category": "Tool",
+      "tags": ["html"],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/Cipherfloppr.html",
+      "filename": "Cipherfloppr.html"
+    },
+    {
+      "name": "Fxy2",
+      "version": "v2",
+      "desc": "1/676 every sec. FULL VOLUME. FULLSCREEN.",
+      "category": "Prank",
+      "tags": ["vbs", "foxy", "windows-only"],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/fxy2.vbs",
+      "filename": "fxy2.vbs"
+    },
+    {
+      "name": "MoveToStartup",
+      "version": "v1",
+      "desc": "Moves all .vbs and .bat files from the location of this file to the WINDOWS STARTUP FOLDER",
+      "category": "Tool",
+      "tags": ["vbs", "bat", "windows-only"],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/Startup.vbs",
+      "filename": "Startup.vbs"
+    },
+    {
+      "name": "Package Entry Generator",
+      "version": "v2",
+      "desc": "Input the RAW of the file you want to add, and it will write the JSON script, for the pkmg.",
+      "category": "Tool",
+      "tags": ["html", "package-manager"],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/pkg-entry-generatorV2.html",
+      "filename": "pkg-entry-generatorV2.html"
+    },
+    {
+      "name": "Minesweeper",
+      "version": "v1",
+      "desc": "Simple Minesweeper game",
+      "category": "Game",
+      "tags": [],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/minesweeper.html",
+      "filename": "minesweeper.html"
+    },
+    {
+      "name": "Linux cheatsheet",
+      "version": "v1.0",
+      "desc": "A list of useful terminal commands.",
+      "category": "Help",
+      "tags": ["html"],
+      "user": "flopp-r",
+      "repo": "my-packages",
+      "branch": "main",
+      "path": "files/linux_cheatsheet.html",
+      "filename": "linux_cheatsheet.html"
+    }
+  ],
+  "webtools": [
+    {
+      "name": "Example Tool",
+      "desc": "Replace this with a real tool",
+      "url": "https://example.com"
+    }
+  ]
+}
 [
   {
   "name": "Cipherfloppr",
