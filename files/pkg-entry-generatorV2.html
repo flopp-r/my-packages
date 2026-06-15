@@ -72,7 +72,10 @@
 
   /* Output */
   #output-section { max-width: 620px; margin: 20px auto 0; display: none; }
-  #output-section h2 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+  #mode-toggle { display: flex; gap: 0; margin-bottom: 28px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; width: fit-content; }
+  .mode-btn { padding: 8px 20px; background: none; border: none; color: var(--dim);
+    font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mode-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
   .output-box { position: relative; background: var(--bg2);
     border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
   #output-code { font-family: 'Courier New', monospace; font-size: 12px;
@@ -97,9 +100,12 @@
   <p class="subtitle">Fill in the details and get the JSON snippet to paste into packages.json</p>
 </div>
 
-<div class="card">
+<div id="mode-toggle">
+  <button class="mode-btn active" id="btn-pkg" onclick="setMode('package')">📦 Package</button>
+  <button class="mode-btn" id="btn-tool" onclick="setMode('webtool')">🔗 Web Tool</button>
+</div>
 
-  <!-- RAW URL -->
+
   <div class="section-label">GitHub Raw URL</div>
   <div class="field">
     <label>Paste the raw file URL from GitHub</label>
@@ -172,6 +178,23 @@
   <button class="btn-gen" onclick="generate()">Generate Entry</button>
 </div>
 
+<div class="card" id="tool-form" style="display:none">
+  <div class="section-label">Web Tool Details</div>
+  <div class="field">
+    <label>Name</label>
+    <input type="text" id="t-name" placeholder="My Web Tool">
+  </div>
+  <div class="field">
+    <label>Description</label>
+    <textarea id="t-desc" placeholder="What does this tool do?"></textarea>
+  </div>
+  <div class="field">
+    <label>URL</label>
+    <input type="text" id="t-url" placeholder="https://example.com">
+  </div>
+  <button class="btn-gen" onclick="generateTool()">Generate Entry</button>
+</div>
+
 <div id="output-section">
   <h2>Your JSON entry</h2>
   <div class="output-box">
@@ -189,7 +212,31 @@
 </div>
 
 <script>
-var tags = [];
+var currentMode = 'package';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('pkg-form').style.display   = mode === 'package' ? 'block' : 'none';
+  document.getElementById('tool-form').style.display  = mode === 'webtool' ? 'block' : 'none';
+  document.getElementById('btn-pkg').classList.toggle('active', mode === 'package');
+  document.getElementById('btn-tool').classList.toggle('active', mode === 'webtool');
+  document.getElementById('output-section').style.display = 'none';
+}
+
+function generateTool() {
+  var name = document.getElementById('t-name').value.trim();
+  var desc = document.getElementById('t-desc').value.trim();
+  var url  = document.getElementById('t-url').value.trim();
+  if (!name) { alert('Please enter a tool name.'); return; }
+  if (!url)  { alert('Please enter a URL.'); return; }
+  var entry = { name: name, desc: desc || '', url: url };
+  document.getElementById('output-code').textContent = JSON.stringify(entry, null, 2);
+  var sec = document.getElementById('output-section');
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+
 
 function parseUrl() {
   var url = document.getElementById('raw-url').value.trim();
